@@ -1,6 +1,12 @@
 #include "stdio.h"
 #include "stdlib.h"
 
+void modoConversao();
+
+void modoSistemaLinear(char opcao);
+
+void modoEquacao(char opcao);
+
 /*
  * EP de Metodos Numericos
  * Alunos:
@@ -22,13 +28,13 @@ int main(void) {
 
         switch (opcao) {
             case 'C':
-                printf("%c", opcao); // printfs devem ser substituidos pelas devidas funcoes.
+                modoConversao();
                 break;
             case 'S':
-                printf("%c", opcao);
+                modoSistemaLinear(opcao);
                 break;
             case 'E':
-                printf("%c", opcao);
+                modoEquacao(opcao);
                 break;
             case 'F':
                 return 0;
@@ -40,3 +46,45 @@ int main(void) {
 
     return 0;
 }
+
+
+/*
+ * Para fins de organização do código,
+ * utilizar os escopos definidos por comentarios
+ * para agrupar funcoes relacionadas.
+ */
+
+/*
+ * Escopo CONVERSAO:
+ */
+void modoConversao() {
+    float entrada = 0.0;
+
+    printf("Entre com um numero Decimal: ");
+    scanf("%f", &entrada);
+
+    printf("%f", entrada);
+
+}
+
+/*
+ * Fim de CONVERVSAO!
+ */
+
+/*
+ * Escopo SISTEMA:
+ */
+void modoSistemaLinear(char opcao) { printf("%c", opcao); }
+
+/*
+ * Fim de SISTEMA:
+ */
+
+/*
+ * Escopo EQUACAO:
+ */
+void modoEquacao(char opcao) { printf("%c", opcao); }
+
+/*
+ * Fim de EQUACAO:
+ */
