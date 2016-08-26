@@ -1,2 +1,2 @@
 project (EPMN)
-add_executable(EPMN tarefa01.c)
+add_executable(EPMN ep1.c)
