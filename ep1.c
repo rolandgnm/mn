@@ -1,3 +1,4 @@
+#include <string.h>
 #include "stdio.h"
 #include "stdlib.h"
 #include "math.h"
@@ -13,6 +14,10 @@ void converteParteInteira(double parteInteira, int base);
 char doubleParaBaseChar(int resto, int base);
 
 char recebeHexChar(int resto);
+
+void inverteVentorChar(char *saida);
+
+void trocaPosicoes(char *posInicial, char *posFinal);
 
 /*
  * EP de Metodos Numericos
@@ -132,12 +137,35 @@ void converteParteInteira(double parteInteira, int base) {
     saida = (char *) realloc(saida, sizeof(char) * posicao + 2);
     saida[posicao] = doubleParaBaseChar(dividendo, base);
     saida[posicao + 1] = '\0'; //fecha string.
+    //fim do algoritmo
 
+    //todo inverter e retornar.
+    inverteVentorChar(saida);
 
     printf("%s\n_\n", saida);
     //return saida;
 
 
+}
+
+void inverteVentorChar(char *saida) {
+    int posFinal = (int) strlen(saida) - 1, posInicial = 0;
+
+    if ((posFinal + 1) == 1) return;
+
+    while ((posFinal - posInicial) > 0) {
+        trocaPosicoes(&saida[posInicial], &saida[posFinal]);
+        posInicial++;
+        posFinal--;
+    }
+
+
+}
+
+void trocaPosicoes(char *posInicial, char *posFinal) {
+    char temp = *posFinal;
+    *posFinal = *posInicial;
+    *posInicial = temp;
 }
 
 char doubleParaBaseChar(int resto, int base) {
