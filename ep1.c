@@ -52,15 +52,21 @@ int main(void) {
         scanf("%s",&opcao);
 
         switch (opcao) {
+            case 'c':
             case 'C':
                 modoConversao();
                 break;
+
+            case 's':
             case 'S':
                 modoSistemaLinear();
                 break;
+
+            case 'e':
             case 'E':
                 modoEquacao(opcao);
                 break;
+
             case 'F':
                 return 0;
             default:
@@ -86,7 +92,7 @@ int main(void) {
  */
 void modoConversao() {
     double entrada = 0.0, parteInteira = 0.0, parteFracionaria = 0.0;
-    char *saida2, *saida8, *saida16, *fracao2, *fracao8, *fracao16;
+    char *saida2, *saida8, *saida16;
 
     //recebe valor de entrada
     printf("-> Entre com um numero Decimal: \n");
@@ -97,21 +103,18 @@ void modoConversao() {
 
     // aloca espaço pro vetor de strings de saida.
     saida2 = converteParteInteira(parteInteira, 2);
-    strcat(saida2, ".");
-    fracao2 = converteParteFracionaria(parteFracionaria, 2);
-    strcat(saida2, fracao2);
+    saida2 = strcat(saida2, ".");
+    saida2 = strcat(saida2, converteParteFracionaria(parteFracionaria, 2));
     printf("%s\n", saida2);
 
     saida8 = converteParteInteira(parteInteira, 8);
     strcat(saida8, ".");
-    fracao8 = converteParteFracionaria(parteFracionaria, 8);
-    strcat(saida2, fracao8);
+    strcat(saida8, converteParteFracionaria(parteFracionaria, 8));
     printf("%s\n", saida8);
 
     saida16 = converteParteInteira(parteInteira, 16);
     strcat(saida16, ".");
-    fracao16 = converteParteFracionaria(parteFracionaria, 16);
-    strcat(saida2, fracao16);
+    strcat(saida16, converteParteFracionaria(parteFracionaria, 16));
     printf("%s\n", saida16);
 
 }
@@ -121,14 +124,20 @@ char *converteParteFracionaria(double fator, int base) {
     int posicao = 0;
     double inteiro;
 
+    /**
+     * LICAO APRENDIDA:
+     * NAO FAZER CAST DO RESULTADO DE MALLOC, REALLOC
+     */
+
     /*
      * int fator: tera papel de fator  no inicio de iteracao
      *                e resultado no fim da operacao.
      */
 
     do {
-        saida = (char *) realloc(saida, sizeof(char) * posicao + 1);
-        fator = modf((fator * base), &inteiro); //modf()
+        saida = realloc(saida, sizeof(saida) * posicao + 1);
+
+		fator = modf((fator * base), &inteiro); //modf() quebra resultado da mult. e alimenta int inteiro e fator.
 
         saida[posicao] = intParaBaseChar((int) inteiro, base);
         posicao += 1;
@@ -139,7 +148,7 @@ char *converteParteFracionaria(double fator, int base) {
 
     } while (strlen(saida) < 20);
 
-    saida = (char *) realloc(saida, sizeof(char) * posicao + 1);
+    saida = realloc(saida, sizeof(saida) * posicao + 1);
     saida[posicao] = '\0'; //fecha string.
     return saida;
 }
@@ -161,7 +170,7 @@ char *converteParteInteira(double dividendo, int base) {
      */
     do {
         //aloca espaço na memoria dinamicamente.
-        saida = (char *) realloc(saida, sizeof(char) * posicao + 1);
+        saida = realloc(saida, sizeof(saida) * posicao + 1);
 
         resto = (int) fmod(dividendo, (double) base); //fmod: retorna o resto da operacao: param1/param2.
         dividendo = floor(dividendo / base); //floor: retorna maior inteiro menor que parametro de entrada.
@@ -175,12 +184,12 @@ char *converteParteInteira(double dividendo, int base) {
     //aloca posicao na string para o dividendo e \0
 
     if(dividendo != 0) {
-        saida = (char *) realloc(saida, sizeof(char) * posicao + 2);
+        saida = realloc(saida, sizeof(saida) * posicao + 2);
         saida[posicao] = intParaBaseChar(dividendo, base);
         saida[posicao + 1] = '\0'; //fecha string.
         inverteVentorChar(saida);
     } else {
-        saida = (char *) realloc(saida, sizeof(char) * posicao + 1);
+        saida = realloc(saida, sizeof(saida) * posicao + 1);
         saida[posicao + 0] = '\0'; //fecha string.
     }
 
@@ -272,20 +281,20 @@ char recebeHexChar(int resto) {
 /*
  * Escopo SISTEMA:
  */
- 
-/*Se houver mem�ria dispon�vel, aloca dinamicamente uma matriz 
-bidimensional de double com l linhas e c colunas. Devolve um ponteiro 
+
+/*Se houver mem�ria dispon�vel, aloca dinamicamente uma matriz
+bidimensional de double com l linhas e c colunas. Devolve um ponteiro
 para essa matriz. Caso contr�rio, devolve um ponteiro nulo.*/
 double **alocaMatriz(int l, int c){
 	int i, j;
 	double **M;
-	
+
 	/*Alocando as linhas da matriz*/
 	M=malloc(sizeof(M)*l);
 	if(M==NULL){//Falta de mem�ria
 		return NULL;
 	}
-	
+
 	/*Alocando as colunas da matriz*/
 	for(i=0;i<l;i++){
 		M[i]=malloc(sizeof(double)*c);
@@ -297,7 +306,7 @@ double **alocaMatriz(int l, int c){
 			return NULL;
 		}
 	}
-	
+
 	return M;
 	/*Fim alocaMatriz*/
 }
@@ -322,7 +331,7 @@ vari�veis livres tem valor 0.*/
 void resolveSL(double **m, int *indice, int n){
 	int i, j=0, tipo=0;
 	double x[n], aux[n];
-	
+
 	for(i=0; i<n; i++){
 		if(m[i][i]==0){
 			if(m[i][n]==0){
@@ -337,16 +346,16 @@ void resolveSL(double **m, int *indice, int n){
 		}
 		else{
 			x[i] = m[i][n]/m[i][i];
-		}	
+		}
 	}
-	
+
 	/*Copia os valores de x em um vetor auxiliar, que ser� usado
 	caso tenha ocorrido troca de colunas durante a execu��o da
 	fun��o jordan.*/
 	for(i=0; i<n; i++){
 		aux[i] = x[i];
 	}
-	
+
 	/*Ordena os valores de x caso tenha ocorrido troca de colunas*/
 	while(j<n){
 		if(indice[j]!=j+1){
@@ -354,7 +363,7 @@ void resolveSL(double **m, int *indice, int n){
 		}
 		j++;
 	}
-	
+
 	//Resultado do SL
 	if(tipo==0){
 		printf("Sistema compativel determinado!\n");
@@ -377,12 +386,12 @@ void jordan(double **m, int n){
 	int i, j, k, w, aux;
 	double mult, coluna[n+1];
 	int indice[n];
-	
+
 	//Vetor com a ordem das colunas dos coeficientes
 	for(i=0; i<n; i++){
 		indice[i] = i+1;
 	}
-	
+
 	for(i=0;i<n;i++){
 		//Piv� igual a 0
 		if(m[i][i]==0){
@@ -390,14 +399,14 @@ void jordan(double **m, int n){
 			while(j<n && m[i][j]==0){
 				j++;
 			}
-			
+
 			if(j<n){
 				for(w=0; w<n; w++){
 					//Troca as colunas
 					coluna[w] = m[w][i];
 					m[w][i] = m[w][j];
 					m[w][j] = coluna[w];
-					
+
 					//Troca o �ndice das colunas
 					aux = indice[i];
 					indice[i] = indice[j];
@@ -410,7 +419,7 @@ void jordan(double **m, int n){
 				}
 			}
 		}
-		
+
 		//Piv� diferente de 0
 		if(m[i][i]!=0){
 			for(j=i-1;j>=0;j--){
@@ -420,7 +429,7 @@ void jordan(double **m, int n){
 					m[j][k]+=mult*m[i][k];
 				}
 			}
-			
+
 			for(j=i+1;j<n;j++){
 				mult=-m[j][i]/m[i][i];
 				m[j][i]=0;
@@ -430,10 +439,10 @@ void jordan(double **m, int n){
 			}
 		}
 	}
-	
+
 	printf("SL diagonalizado!\n");
 	imprimeMatriz(m, n, n+1);
-	
+
 	//Chamada da fun��o resolveSL que resolve o SL.
 	resolveSL(m, indice, n);
 }
@@ -449,11 +458,11 @@ void modoSistemaLinear(){
 	char coef_c[18];
 	double **M;
 	FILE *arq;
-	
+
 	//Leitura do nome do arquivo pelo teclado. Omite-se a extensao.
 	printf("Nome de um arquivo (com ate 32 caracteres): ");
 	scanf("%s", &nome_arq);
-	
+
 	//Abertura do arquivo
 	strcat(nome_arq, ".txt");
 	arq = fopen(nome_arq, "r");
@@ -465,9 +474,9 @@ void modoSistemaLinear(){
 		fscanf(arq, "%s\n", &grau_c);
 		grau = atoi(grau_c);
 		printf("%d\n", grau);
-		
+
 		char coef[(grau*18)+(grau+1)];
-		
+
 		/*Aloca-se uma matriz com quantidade de linhas igual ao grau do SL.
 		E quantidade de colunas igual ao grau do SL + 1.*/
 		M = alocaMatriz(grau, grau+1);
@@ -475,16 +484,16 @@ void modoSistemaLinear(){
 			printf("Deu pau!");
 			return;
 		}
-		
+
 		/*Leitura dos coeficientes e atribui��o de cada um deles a uma
-		posi��o da matriz.*/ 
+		posi��o da matriz.*/
 		while(!feof(arq)){
 			fgets(coef, sizeof(coef), arq);
-			
+
 			while(coef[i]!='\0'){
 				if(coef[i] != ' '){
 					coef_c[j] = coef[i];
-					j++;	
+					j++;
 				}
 				else{
 					if(coef_c[j]!='\0') coef_c[j]='\0';
@@ -492,21 +501,21 @@ void modoSistemaLinear(){
 					count++;
 					j = 0;
 				}
-				i++;	
-			} 
+				i++;
+			}
 			if(coef[i]=='\0'){
 				if(coef_c[j]!='\0') coef_c[j]='\0';
 				M[linha][count] = atoi(coef_c);
 				linha++;
 			}
-			
+
 			i = 0;
 			j = 0;
 			count = 0;
 		}
 	}
 	fclose(arq);
-	
+
 	//Chamada da funcao jordan.
 	jordan(M, grau);
 }
