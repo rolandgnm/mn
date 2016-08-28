@@ -3,21 +3,26 @@
 #include "stdlib.h"
 #include "math.h"
 
+#define EPSILON 0.000001
+
+
 void modoConversao();
 
 void modoSistemaLinear(char opcao);
 
 void modoEquacao(char opcao);
 
-void converteParteInteira(double parteInteira, int base);
+char *converteParteInteira(double dividendo, int base);
 
-char doubleParaBaseChar(int resto, int base);
+char intParaBaseChar(int resto, int base);
 
 char recebeHexChar(int resto);
 
 void inverteVentorChar(char *saida);
 
 void trocaPosicoes(char *posInicial, char *posFinal);
+
+char *converteParteFracionaria(double parteFracionada, int base);
 
 /*
  * EP de Metodos Numericos
@@ -73,8 +78,8 @@ int main(void) {
  * Escopo CONVERSAO:
  */
 void modoConversao() {
-    double entrada, parteInteira, parteFracionaria;
-    char saída[41];
+    double entrada = 0.0, parteInteira = 0.0, parteFracionaria = 0.0;
+    char *saida2, *saida8, *saida16, *fracao2, *fracao8, *fracao16;
 
     //recebe valor de entrada
     printf("-> Entre com um numero Decimal: \n");
@@ -83,29 +88,58 @@ void modoConversao() {
     //Separa numero decimal em parte inteira e parte fracionaria.
     parteFracionaria = modf(entrada, &parteInteira);
 
-    printf("entrada: %f , parte inteira: %f , parte fracionaria: %f\n", entrada, parteInteira,
-           parteFracionaria); //TODO APAGAR DPS
+    // aloca espaço pro vetor de strings de saida.
+    saida2 = converteParteInteira(parteInteira, 2);
+    strcat(saida2, ".");
+    fracao2 = converteParteFracionaria(parteFracionaria, 2);
+    strcat(saida2, fracao2);
+    printf("%s\n", saida2);
 
-//    /* char* = */ converteParteInteira(parteInteira, 2);
-    //char* = converteParteInteira(parteFracionaria, 8);
-    //char* = converteParteInteira(parteFracionaria, 16);
-    converteParteInteira(parteInteira, 2);
-    converteParteInteira(parteInteira, 8);
-    converteParteInteira(parteInteira, 16);
+    saida8 = converteParteInteira(parteInteira, 8);
+    strcat(saida8, ".");
+    fracao8 = converteParteFracionaria(parteFracionaria, 8);
+    strcat(saida2, fracao8);
+    printf("%s\n", saida8);
 
-
-    //TODO A FINALIZAR...
-
-
+    saida16 = converteParteInteira(parteInteira, 16);
+    strcat(saida16, ".");
+    fracao16 = converteParteFracionaria(parteFracionaria, 16);
+    strcat(saida2, fracao16);
+    printf("%s\n", saida16);
 
 }
 
+char *converteParteFracionaria(double fator, int base) {
+    char *saida = NULL;
+    int posicao = 0;
+    double inteiro;
 
-void converteParteInteira(double parteInteira, int base) {
-    //TODO INVERTER char* saida ANTES DE RETORNAR.
-    //TODO MUDAR RETORNO PARA char* NA ASSINATURA TAMBEM NO TOPO DO ARQUIVO
+    /*
+     * int fator: tera papel de fator  no inicio de iteracao
+     *                e resultado no fim da operacao.
+     */
 
-    double dividendo;
+    do {
+        saida = (char *) realloc(saida, sizeof(char) * posicao + 1);
+        fator = modf((fator * base), &inteiro); //modf()
+
+        saida[posicao] = intParaBaseChar((int) inteiro, base);
+        posicao += 1;
+
+        if (fator < EPSILON) {
+            break;
+        }
+
+    } while (strlen(saida) < 20);
+
+    saida = (char *) realloc(saida, sizeof(char) * posicao + 1);
+    saida[posicao] = '\0'; //fecha string.
+    return saida;
+}
+
+
+char *converteParteInteira(double dividendo, int base) {
+
     char *saida = NULL; //Importante pra o realloc().
     int resto, posicao = 0;
 
@@ -114,11 +148,9 @@ void converteParteInteira(double parteInteira, int base) {
      * int dividendo: tera papel de dividendo no inicio da iteracao e
      *                  quociente no fim da iteracao.
      */
-    dividendo = parteInteira;
 
     /*
      * do-while cria palavra do numero saida' invertida;
-     * TODO aplicar funcao de inversao para obter valor correto.
      */
     do {
         //aloca espaço na memoria dinamicamente.
@@ -128,22 +160,24 @@ void converteParteInteira(double parteInteira, int base) {
         dividendo = floor(dividendo / base); //floor: retorna maior inteiro menor que parametro de entrada.
 
         //coloca valor gerado na posicao criada na str dinamica.
-        saida[posicao] = doubleParaBaseChar(resto, base);
+        saida[posicao] = intParaBaseChar(resto, base);
         posicao += 1;
 
     } while (dividendo >= base);
 
-    //aloca posicao na string para
-    saida = (char *) realloc(saida, sizeof(char) * posicao + 2);
-    saida[posicao] = doubleParaBaseChar(dividendo, base);
-    saida[posicao + 1] = '\0'; //fecha string.
-    //fim do algoritmo
+    //aloca posicao na string para o dividendo e \0
 
-    //todo inverter e retornar.
-    inverteVentorChar(saida);
+    if(dividendo != 0) {
+        saida = (char *) realloc(saida, sizeof(char) * posicao + 2);
+        saida[posicao] = intParaBaseChar(dividendo, base);
+        saida[posicao + 1] = '\0'; //fecha string.
+        inverteVentorChar(saida);
+    } else {
+        saida = (char *) realloc(saida, sizeof(char) * posicao + 1);
+        saida[posicao + 0] = '\0'; //fecha string.
+    }
 
-    printf("%s\n_\n", saida);
-    //return saida;
+    return saida;
 
 
 }
@@ -168,7 +202,7 @@ void trocaPosicoes(char *posInicial, char *posFinal) {
     *posInicial = temp;
 }
 
-char doubleParaBaseChar(int resto, int base) {
+char intParaBaseChar(int resto, int base) {
     char c;
     switch (base) {
         case 2:
