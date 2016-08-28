@@ -48,7 +48,7 @@ int main(void) {
         /*
          * Menu Inicial
          */
-        printf("-> â€˜Câ€™ â€“ Conversao, â€˜Sâ€™ â€“ Sistema Linear, â€˜Eâ€™ â€“ Equacao Algebrica e â€˜Fâ€™ â€“ Finalizar:\n");
+        printf("-> ‘C’ – Conversao, ‘S’ – Sistema Linear, ‘E’ – Equacao Algebrica e ‘F’ – Finalizar:\n");
         scanf("%s",&opcao);
 
         switch (opcao) {
@@ -76,7 +76,7 @@ int main(void) {
 
 
 /*
- * Para fins de organizaÃ§Ã£o do cÃ³digo,
+ * Para fins de organização do código,
  * utilizar os escopos definidos por comentarios
  * para agrupar funcoes relacionadas.
  */
@@ -95,7 +95,7 @@ void modoConversao() {
     //Separa numero decimal em parte inteira e parte fracionaria.
     parteFracionaria = modf(entrada, &parteInteira);
 
-    // aloca espaÃ§o pro vetor de strings de saida.
+    // aloca espaço pro vetor de strings de saida.
     saida2 = converteParteInteira(parteInteira, 2);
     strcat(saida2, ".");
     fracao2 = converteParteFracionaria(parteFracionaria, 2);
@@ -160,7 +160,7 @@ char *converteParteInteira(double dividendo, int base) {
      * do-while cria palavra do numero saida' invertida;
      */
     do {
-        //aloca espaÃ§o na memoria dinamicamente.
+        //aloca espaço na memoria dinamicamente.
         saida = (char *) realloc(saida, sizeof(char) * posicao + 1);
 
         resto = (int) fmod(dividendo, (double) base); //fmod: retorna o resto da operacao: param1/param2.
@@ -273,23 +273,23 @@ char recebeHexChar(int resto) {
  * Escopo SISTEMA:
  */
  
-/*Se houver memï¿½ria disponï¿½vel, aloca dinamicamente uma matriz 
+/*Se houver mem?ria dispon?vel, aloca dinamicamente uma matriz 
 bidimensional de double com l linhas e c colunas. Devolve um ponteiro 
-para essa matriz. Caso contrï¿½rio, devolve um ponteiro nulo.*/
+para essa matriz. Caso contr?rio, devolve um ponteiro nulo.*/
 double **alocaMatriz(int l, int c){
 	int i, j;
 	double **M;
 	
 	/*Alocando as linhas da matriz*/
 	M=malloc(sizeof(M)*l);
-	if(M==NULL){//Falta de memï¿½ria
+	if(M==NULL){//Falta de mem?ria
 		return NULL;
 	}
 	
 	/*Alocando as colunas da matriz*/
 	for(i=0;i<l;i++){
 		M[i]=malloc(sizeof(double)*c);
-		if(M[i]==NULL){//Falta de memï¿½ria
+		if(M[i]==NULL){//Falta de mem?ria
 			for(j=0;j<i;j++){
 				free(M[j]);
 			}
@@ -315,10 +315,10 @@ void imprimeMatriz(double **M, int l, int c){
 }
 
 /*Recebe m, a matriz aumentada de um SL diagonal com n 
-equaï¿½ï¿½es e n variï¿½veis. Se o SL for incompatï¿½vel, devolve 2; se for 
-determinado, devolve 0 e coloca em x a soluï¿½ï¿½o do SL; se for 
-indeterminado, devolve 1 e coloca em x a soluï¿½ï¿½o do SL na qual as 
-variï¿½veis livres tem valor 0.*/
+equa??es e n vari?veis. Se o SL for incompat?vel, devolve 2; se for 
+determinado, devolve 0 e coloca em x a solu??o do SL; se for 
+indeterminado, devolve 1 e coloca em x a solu??o do SL na qual as 
+vari?veis livres tem valor 0.*/
 void resolveSL(double **m, int *indice, int n){
 	int i, j=0, tipo=0;
 	double x[n], aux[n];
@@ -340,9 +340,9 @@ void resolveSL(double **m, int *indice, int n){
 		}	
 	}
 	
-	/*Copia os valores de x em um vetor auxiliar, que serï¿½ usado
-	caso tenha ocorrido troca de colunas durante a execuï¿½ï¿½o da
-	funï¿½ï¿½o jordan.*/
+	/*Copia os valores de x em um vetor auxiliar, que ser? usado
+	caso tenha ocorrido troca de colunas durante a execu??o da
+	fun??o jordan.*/
 	for(i=0; i<n; i++){
 		aux[i] = x[i];
 	}
@@ -367,11 +367,11 @@ void resolveSL(double **m, int *indice, int n){
 	}
 	printf("\n");
 }
-/*Fim da funï¿½ï¿½o resolveSL*/
+/*Fim da fun??o resolveSL*/
 
-/* Recebe m, a matriz aumentada de um SL com n variï¿½veis e n 
-equaï¿½ï¿½es e transforma a matriz de coeficientes do SL numa 
-matriz diagonal. Em seguida, chama a funï¿½ï¿½o resolveSL para resolver
+/* Recebe m, a matriz aumentada de um SL com n vari?veis e n 
+equa??es e transforma a matriz de coeficientes do SL numa 
+matriz diagonal. Em seguida, chama a fun??o resolveSL para resolver
 o SL, efetivamente.*/
 void jordan(double **m, int n){
 	int i, j, k, w, aux;
@@ -384,7 +384,7 @@ void jordan(double **m, int n){
 	}
 	
 	for(i=0;i<n;i++){
-		//Pivï¿½ igual a 0
+		//Piv? igual a 0
 		if(m[i][i]==0){
 			j=i+1;
 			while(j<n && m[i][j]==0){
@@ -398,7 +398,7 @@ void jordan(double **m, int n){
 					m[w][i] = m[w][j];
 					m[w][j] = coluna[w];
 					
-					//Troca o ï¿½ndice das colunas
+					//Troca o ?ndice das colunas
 					aux = indice[i];
 					indice[i] = indice[j];
 					indice[j] = aux;
@@ -411,7 +411,7 @@ void jordan(double **m, int n){
 			}
 		}
 		
-		//Pivï¿½ diferente de 0
+		//Piv? diferente de 0
 		if(m[i][i]!=0){
 			for(j=i-1;j>=0;j--){
 				mult=-m[j][i]/m[i][i];
@@ -434,7 +434,7 @@ void jordan(double **m, int n){
 	printf("SL diagonalizado!\n");
 	imprimeMatriz(m, n, n+1);
 	
-	//Chamada da funï¿½ï¿½o resolveSL que resolve o SL.
+	//Chamada da fun??o resolveSL que resolve o SL.
 	resolveSL(m, indice, n);
 }
 /*Fim do metodo jordan*/
@@ -446,7 +446,7 @@ nela. Por fim, a funcao jordan e chamada para diagonalizar a matriz e resolver o
 void modoSistemaLinear(){
 	char nome_arq[37], grau_c[14];
 	int grau=0, i=0, j=0, linha=0, count=0, i_neg=0;
-	char coef_c[18];
+	char coef_c[18], *txt;
 	double **M;
 	FILE *arq;
 	
@@ -455,29 +455,32 @@ void modoSistemaLinear(){
 	scanf("%s", &nome_arq);
 	
 	//Abertura do arquivo
-	strcat(nome_arq, ".txt");
+	txt = strstr(nome_arq, ".txt");
+	if(txt == NULL){
+		strcat(nome_arq, ".txt");	
+	}
 	arq = fopen(nome_arq, "r");
 	if(arq==NULL){
 		printf("ERRO, nao foi possivel abrir o arquivo!\n");
+		return;
 	}
 	else{
 		//Extracao do grau do SL
 		fscanf(arq, "%s\n", &grau_c);
 		grau = atoi(grau_c);
-		printf("%d\n", grau);
-		
+
 		char coef[(grau*18)+(grau+1)];
 		
 		/*Aloca-se uma matriz com quantidade de linhas igual ao grau do SL.
 		E quantidade de colunas igual ao grau do SL + 1.*/
 		M = alocaMatriz(grau, grau+1);
-		if(M==NULL){//Falta memï¿½ria
+		if(M==NULL){//Falta mem?ria
 			printf("Deu pau!");
 			return;
 		}
 		
-		/*Leitura dos coeficientes e atribuiï¿½ï¿½o de cada um deles a uma
-		posiï¿½ï¿½o da matriz.*/ 
+		/*Leitura dos coeficientes e atribui??o de cada um deles a uma
+		posi??o da matriz.*/ 
 		while(!feof(arq)){
 			fgets(coef, sizeof(coef), arq);
 			
