@@ -5,7 +5,15 @@
 
 void modoConversao();
 
-void modoSistemaLinear(char opcao);
+void modoSistemaLinear();
+
+double **alocaMatriz(int l, int c);
+
+void imprimeMatriz(double **M, int l, int c);
+
+void resolveSL(double **m, int *indice, int n);
+
+void jordan(double **m, int n);
 
 void modoEquacao(char opcao);
 
@@ -35,16 +43,15 @@ int main(void) {
         /*
          * Menu Inicial
          */
-        printf("-> â€˜Câ€™ â€“ ConversÃ£o, â€˜Sâ€™ â€“ Sistema Linear, â€˜Eâ€™ â€“ EquaÃ§Ã£o AlgÃ©brica e â€˜Fâ€™ â€“ Finalizar:\n");
-//        scanf("%s",&opcao); TODO DESCOMENTAR.
-        opcao = 'C';
+        printf("-> ‘C’ – Conversão, ‘S’ – Sistema Linear, ‘E’ – Equação Algébrica e ‘F’ – Finalizar:\n");
+        scanf("%s",&opcao); 
 
         switch (opcao) {
             case 'C':
                 modoConversao();
                 break;
             case 'S':
-                modoSistemaLinear(opcao);
+                modoSistemaLinear();
                 break;
             case 'E':
                 modoEquacao(opcao);
@@ -74,7 +81,7 @@ int main(void) {
  */
 void modoConversao() {
     double entrada, parteInteira, parteFracionaria;
-    char saÃ­da[41];
+    char saida[41];
 
     //recebe valor de entrada
     printf("-> Entre com um numero Decimal: \n");
@@ -231,7 +238,245 @@ char recebeHexChar(int resto) {
 /*
  * Escopo SISTEMA:
  */
-void modoSistemaLinear(char opcao) { printf("%c\n", opcao); }
+ 
+/*Se houver memória disponível, aloca dinamicamente uma matriz 
+bidimensional de double com l linhas e c colunas. Devolve um ponteiro 
+para essa matriz. Caso contrário, devolve um ponteiro nulo.*/
+double **alocaMatriz(int l, int c){
+	int i, j;
+	double **M;
+	
+	/*Alocando as linhas da matriz*/
+	M=malloc(sizeof(M)*l);
+	if(M==NULL){//Falta de memória
+		return NULL;
+	}
+	
+	/*Alocando as colunas da matriz*/
+	for(i=0;i<l;i++){
+		M[i]=malloc(sizeof(double)*c);
+		if(M[i]==NULL){//Falta de memória
+			for(j=0;j<i;j++){
+				free(M[j]);
+			}
+			free(M);
+			return NULL;
+		}
+	}
+	
+	return M;
+	/*Fim alocaMatriz*/
+}
+
+/*Imprime uma matriz com l linhas e c colunas*/
+void imprimeMatriz(double **M, int l, int c){
+	int i, j;
+	for(i=0;i<l;i++){
+		for(j=0;j<c;j++){
+			printf("%8.3lf ", M[i][j]);
+		}
+		printf("\n");
+	}
+	/*Fim imprimeMatriz*/
+}
+
+/*Recebe m, a matriz aumentada de um SL diagonal com n 
+equações e n variáveis. Se o SL for incompatível, devolve 2; se for 
+determinado, devolve 0 e coloca em x a solução do SL; se for 
+indeterminado, devolve 1 e coloca em x a solução do SL na qual as 
+variáveis livres tem valor 0.*/
+void resolveSL(double **m, int *indice, int n){
+	int i, j=0, tipo=0;
+	double x[n], aux[n];
+	
+	for(i=0; i<n; i++){
+		if(m[i][i]==0){
+			if(m[i][n]==0){
+				tipo = 1;
+				x[i] = 0;
+			}
+			else{
+				tipo = 2;
+				printf("Sistema incompativel!\n");
+				return;
+			}
+		}
+		else{
+			x[i] = m[i][n]/m[i][i];
+		}	
+	}
+	
+	/*Copia os valores de x em um vetor auxiliar, que será usado
+	caso tenha ocorrido troca de colunas durante a execução da
+	função jordan.*/
+	for(i=0; i<n; i++){
+		aux[i] = x[i];
+	}
+	
+	/*Ordena os valores de x caso tenha ocorrido troca de colunas*/
+	while(j<n){
+		if(indice[j]!=j+1){
+			x[indice[j]-1] = aux[j];
+		}
+		j++;
+	}
+	
+	//Resultado do SL
+	if(tipo==0){
+		printf("Sistema compativel determinado!\n");
+	}
+	else{
+		printf("Sistema compativel indeterminado!\n");
+	}
+	for(i=0;i<n;i++){
+	 	printf("%8.3lf ", x[i]);
+	}
+	printf("\n");
+}
+/*Fim da função resolveSL*/
+
+/* Recebe m, a matriz aumentada de um SL com n variáveis e n 
+equações e transforma a matriz de coeficientes do SL numa 
+matriz diagonal. Em seguida, chama a função resolveSL para resolver
+o SL, efetivamente.*/
+void jordan(double **m, int n){
+	int i, j, k, w, aux;
+	double mult, coluna[n+1];
+	int indice[n];
+	
+	//Vetor com a ordem das colunas dos coeficientes
+	for(i=0; i<n; i++){
+		indice[i] = i+1;
+	}
+	
+	for(i=0;i<n;i++){
+		//Pivô igual a 0
+		if(m[i][i]==0){
+			j=i+1;
+			while(j<n && m[i][j]==0){
+				j++;
+			}
+			
+			if(j<n){
+				for(w=0; w<n; w++){
+					//Troca as colunas
+					coluna[w] = m[w][i];
+					m[w][i] = m[w][j];
+					m[w][j] = coluna[w];
+					
+					//Troca o índice das colunas
+					aux = indice[i];
+					indice[i] = indice[j];
+					indice[j] = aux;
+ 				}
+			}
+			if(j==n-1){
+				for(w=0; w<n; w++){
+					m[w][j] = 0;
+				}
+			}
+		}
+		
+		//Pivô diferente de 0
+		if(m[i][i]!=0){
+			for(j=i-1;j>=0;j--){
+				mult=-m[j][i]/m[i][i];
+				m[j][i]=0;
+				for(k=i+1;k<=n;k++){
+					m[j][k]+=mult*m[i][k];
+				}
+			}
+			
+			for(j=i+1;j<n;j++){
+				mult=-m[j][i]/m[i][i];
+				m[j][i]=0;
+				for(k=i+1;k<=n;k++){
+					m[j][k]+=mult*m[i][k];
+				}
+			}
+		}
+	}
+	
+	printf("SL diagonalizado!\n");
+	imprimeMatriz(m, n, n+1);
+	
+	//Chamada da função resolveSL que resolve o SL.
+	resolveSL(m, indice, n);
+}
+/*Fim do método jordan*/
+
+/*O método pede que o usuário digite o nome de um arquivo .txt (nome_arq) que contenha
+o grau (grau) e os coeficientes (coef) de um SL. Os caracteres do arquivo são convertidos
+para valores inteiros. Uma matriz M é alocada e os coeficientes são adicionados
+nela. Por fim, a função jordan é chamada para diagonalizar a matriz e resolver o SL.*/
+void modoSistemaLinear(){
+	char nome_arq[37], grau_c[14];
+	int grau=0, i=0, j=0, linha=0, count=0, i_neg=0;
+	char coef_c[18];
+	double **M;
+	FILE *arq;
+	
+	//Leitura do nome do arquivo pelo teclado. Omite-se a extensão.
+	printf("Nome de um arquivo (com ate 32 caracteres): ");
+	scanf("%s", &nome_arq);
+	
+	//Abertura do arquivo
+	strcat(nome_arq, ".txt");
+	arq = fopen(nome_arq, "r");
+	if(arq==NULL){
+		printf("ERRO, nao foi possivel abrir o arquivo!\n");
+	}
+	else{
+		//Extração do grau do SL
+		fscanf(arq, "%s\n", &grau_c);
+		grau = atoi(grau_c);
+		printf("%d\n", grau);
+		
+		char coef[(grau*18)+(grau+1)];
+		
+		/*Aloca-se uma matriz com quantidade de linhas igual ao grau do SL.
+		E quantidade de colunas igual ao grau do SL + 1.*/
+		M = alocaMatriz(grau, grau+1);
+		if(M==NULL){//Falta memória
+			printf("Deu pau!");
+			return;
+		}
+		
+		/*Leitura dos coeficientes e atribuição de cada um deles a uma
+		posição da matriz.*/ 
+		while(!feof(arq)){
+			fgets(coef, sizeof(coef), arq);
+			
+			while(coef[i]!='\0'){
+				if(coef[i] != ' '){
+					coef_c[j] = coef[i];
+					j++;	
+				}
+				else{
+					if(coef_c[j]!='\0') coef_c[j]='\0';
+					M[linha][count] = atoi(coef_c);
+					count++;
+					j = 0;
+				}
+				i++;	
+			} 
+			if(coef[i]=='\0'){
+				if(coef_c[j]!='\0') coef_c[j]='\0';
+				M[linha][count] = atoi(coef_c);
+				linha++;
+			}
+			
+			i = 0;
+			j = 0;
+			count = 0;
+		}
+	}
+	fclose(arq);
+	
+	//Chamada da função jordan.
+	jordan(M, grau);
+}
+/*Fim do método modoSistemaLinear*/
 
 /*
  * Fim de SISTEMA:
