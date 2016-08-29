@@ -1,3 +1,12 @@
+/**
+ * EP de Metodos Numericos
+ * Alunos:
+ *     Daniele Delmiro
+ *     Joamila Brito
+ *     Jonatas Cartaxo
+ *     Roland Gabriel
+ */
+
 #include <string.h>
 #include "stdio.h"
 #include "stdlib.h"
@@ -32,14 +41,8 @@ void trocaPosicoes(char *posInicial, char *posFinal);
 
 char *converteParteFracionaria(double parteFracionada, int base);
 
-/*
- * EP de Metodos Numericos
- * Alunos:
- *     Daniele Delmiro
- *     Joamila Brito
- *     Jonatas Cartaxo
- *     Roland Gabriel
- */
+
+void resolveOutput(double entrada, int base);
 
 int main(void) {
     char opcao = '0';
@@ -91,32 +94,40 @@ int main(void) {
  * Escopo CONVERSAO:
  */
 void modoConversao() {
-    double entrada = 0.0, parteInteira = 0.0, parteFracionaria = 0.0;
-    char *saida2, *saida8, *saida16;
+	double entrada = 0.0;
 
     //recebe valor de entrada
     printf("-> Entre com um numero Decimal: \n");
     scanf("%lf", &entrada);
 
-    //Separa numero decimal em parte inteira e parte fracionaria.
-    parteFracionaria = modf(entrada, &parteInteira);
+	resolveOutput(entrada, 2);
+	resolveOutput(entrada, 8);
+	resolveOutput(entrada, 16);
 
-    // aloca espaço pro vetor de strings de saida.
-    saida2 = converteParteInteira(parteInteira, 2);
-    saida2 = strcat(saida2, ".");
-    saida2 = strcat(saida2, converteParteFracionaria(parteFracionaria, 2));
-    printf("%s\n", saida2);
+}
 
-    saida8 = converteParteInteira(parteInteira, 8);
-    strcat(saida8, ".");
-    strcat(saida8, converteParteFracionaria(parteFracionaria, 8));
-    printf("%s\n", saida8);
+void resolveOutput(double entrada, int base) {
+	double parteInteira = 0.0, parteFracionaria;
+	int tamanhoFinal;
+	char *inteiro, *fracao, *saida;
 
-    saida16 = converteParteInteira(parteInteira, 16);
-    strcat(saida16, ".");
-    strcat(saida16, converteParteFracionaria(parteFracionaria, 16));
-    printf("%s\n", saida16);
+	parteFracionaria = modf(entrada, &parteInteira); 			//alimenta int partInteira e retorna parte fracionaria
 
+	//Recebe em cada char* os numeros resultante na base aplicada.
+	inteiro = converteParteInteira(parteInteira, base);
+	fracao = converteParteFracionaria(parteFracionaria, base);
+
+	tamanhoFinal = (int) (strlen(fracao) + strlen(inteiro)) + 2;
+	saida = malloc(sizeof(saida) * tamanhoFinal);
+	strcpy(saida, inteiro);
+	strcat(saida, ".");
+	strcat(saida, fracao);
+
+	printf("%s\n",saida);
+
+	free(inteiro);
+	free(fracao);
+	free(saida);
 }
 
 char *converteParteFracionaria(double fator, int base) {
