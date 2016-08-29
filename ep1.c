@@ -97,7 +97,7 @@ void modoConversao() {
 	double entrada = 0.0;
 
     //recebe valor de entrada
-    printf("-> Entre com um numero Decimal: \n");
+    printf("-> Entre com um numero Decimal: ");
     scanf("%lf", &entrada);
 
 	resolveOutput(entrada, 2);
@@ -138,6 +138,7 @@ char *converteParteFracionaria(double fator, int base) {
     /**
      * LICAO APRENDIDA:
      * NAO FAZER CAST DO RESULTADO DE MALLOC, REALLOC
+     * e dar free sempre que usar!
      */
 
     /*
