@@ -425,9 +425,9 @@ void jordan(double **m, int n){
 					indice[j] = aux;
  				}
 			}
-			if(j==n-1){
+			if(j==n){
 				for(w=0; w<n; w++){
-					m[w][j] = 0;
+					m[w][j-1] = 0;
 				}
 			}
 		}
@@ -467,7 +467,7 @@ nela. Por fim, a funcao jordan e chamada para diagonalizar a matriz e resolver o
 void modoSistemaLinear(){
 	char nome_arq[37], grau_c[14];
 	int grau=0, i=0, j=0, linha=0, count=0, i_neg=0;
-	char coef_c[18], *txt;
+	char coef_c[16], *txt;
 	double **M;
 	FILE *arq;
 
@@ -490,7 +490,7 @@ void modoSistemaLinear(){
 		fscanf(arq, "%s\n", &grau_c);
 		grau = atoi(grau_c);
 
-		char coef[(grau*18)+(grau+1)];
+		char coef[((grau+1)*16)+grau];
 
 		/*Aloca-se uma matriz com quantidade de linhas igual ao grau do SL.
 		E quantidade de colunas igual ao grau do SL + 1.*/
