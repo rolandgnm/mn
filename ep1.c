@@ -27,7 +27,9 @@ void resolveSL(double **m, int *indice, int n);
 
 void jordan(double **m, int n);
 
-void modoEquacao(char opcao);
+void modoEquacao();
+
+void bolzano(int n, float *coef, float *intervalo);
 
 char *converteParteInteira(double dividendo, int base);
 
@@ -67,7 +69,7 @@ int main(void) {
 
             case 'e':
             case 'E':
-                modoEquacao(opcao);
+                modoEquacao();
                 break;
 
             case 'F':
@@ -543,7 +545,271 @@ void modoSistemaLinear(){
 /*
  * Escopo EQUACAO:
  */
-void modoEquacao(char opcao) { printf("%c\n", opcao); }
+
+//Essa função lê uma equação algébrica da forma anxn + an-1xn-1 + ... + a1x + a0, com an > 0 e a0 # 0
+	//Utilizando o Teorema de Lagrange, o programa  calcula e exibi os intervalos onde se encontram as raízes reais negativas e as raízes reais positivas da equação. 
+	//Entradas do usuário: Grau e coeficientes da equação algébrica
+	//Saida do programa: Intervalos onde se encontram as raízes (Teorema de Lagrange)
+void modoEquacao(){ 
+	 int g,i,n;
+	float v[100],v1[100],v2[100],v3[100];
+	float B0=0,B1=0,B2=0,B3=0,aux=0,k=0,k0,k1,k2,k3;
+	float a,x,L0=0,L1=0,L2=0,L3=0;
+	float lim_positivo[2], lim_negativo[2];
+	char escolha;
+	
+	do{
+		printf("Favor, digite o grau da equa%c%co: ",135,198);  // entrada de dados do grau da equação
+ 		scanf("%d",&g); // leitura da variavel grau da equação
+ 		printf("Favor, digite os coeficientes da equacao\n");
+		printf("O primeiro valor deve ser maior do que zero e o ultimo valor diferente de zero\n");  
+		n=g;
+		
+		// entrada de dados do polinômio p(x)
+		for (i=0;i<=g;i++)
+ 		{
+ 	   		printf("a[%d]: ",n);  
+ 	    	scanf("%f",&v[i]); // leitura dos coeficientes do polinômio p(x)
+ 	    	n--;
+		}
+		
+		if(v[0]<0 || v[g]==0)
+			printf("Entrada errada!\n");
+	}while(v[0]<0 || v[g]==0);
+	
+   // calculando o polinômio p1(x)
+    if(v[g]>=0)
+    {
+		for(i=0; i<=g; i++)
+		{
+			v1[i] = v[g-i];
+		}
+    }
+    else
+    {
+		for(i=0; i<=g; i++)
+		{
+			v1[i] = -1*v[g-i];
+		}
+    }
+    
+	// calculando o polinômio p2(x)
+	if(v1[g]>=0)
+    {
+		for(i=0; i<=g; i++)
+		{
+			if ((g-i)%2==0)
+			v2[i] = v1[g-i];
+			else
+			v2[i] = -1*v1[g-i];
+			
+		}
+    }
+    else
+    {
+		for(i=0; i<=g; i++)
+		{
+			if ((g-i)%2==0)
+			v2[i] = -1*v1[g-i];
+			else
+			v2[i] =v1[g-i];
+		}
+    }
+    
+	// calculando o polinômio p3(x)
+	if(v2[g]>=0)
+    {
+		for(i=0; i<=g; i++)
+		{
+			
+			v3[i] = v2[g-i];
+			
+		}
+    }
+    else
+    {
+		for(i=0; i<=g; i++)
+		{
+			if ((g-i)%2==0)
+			 v3[i] = -1*v2[g-i];
+			else
+			v3[i] =-1*v2[g-i];
+		}
+    }
+
+	k0=0;
+	
+	// calculando o B e K de p(x)
+    for(i=0; i<=g; i++)
+    {
+    	if(v[i]<0)
+    	{
+    		if(k0<g-i)
+    		{
+    			k0=g-i;
+			}
+    		
+		}
+		if(v[i]<0)
+    	{
+    		if(aux>v[i])
+    		{
+				aux= v[i];
+			}
+		}
+    }
+    B0 = -1*aux;
+
+	//calculando L0 de p(x)
+    x = (g-k0);
+    a=(B0/v[0]);
+    L0 = 1+ pow(a,1/x);
+    
+	k1 = 0;
+    aux=0;
+    
+    // calculando o B e K de p1(x)
+    for(i=0; i<=g; i++)
+    {
+    	
+		if(v1[i]<0)
+    	{
+    		if(k1<g-i)
+    		{
+    			k1=g-i;	
+			}
+    		
+		}
+		if(v1[i]<0)
+    	{
+    		if(aux>v1[i])
+    		{
+				aux= v1[i];
+			}
+		}
+    }
+    B1 = -1*aux;
+
+	//calculando L1 de p1(x)
+	x = (g-k1);
+	a= (B1/v1[0]);
+    L1 = 1+pow(a,1/x);
+    
+	k2 = 0;
+    aux=0;
+    
+    // calculando o B e K de p2(x)
+    for(i=0; i<=g; i++)
+    {
+    	
+		if(v2[i]<0)
+    	{
+    		if(k2<g-i)
+    		{
+    			k2=g-i;	
+			}
+		}
+		if(v2[i]<0)
+    	{
+    		if(aux>v2[i])
+    		{
+				aux= v2[i];
+			}
+		}
+    }
+    B2 = -1*aux;
+    
+     a=0;
+	//calculando L2 de p2(x)
+    x = (g-k2);
+	a= (B2/v2[0]);
+    L2 = 1+pow(a,1/x);
+    
+    // calculando o B e K de p3(x)
+    k3=0;
+	aux=0;
+	for(i=0; i<=g; i++)
+    {
+    	
+		if(v3[i]<0)
+    	{
+    		if(k3<g-i)
+    		{
+    			k3=g-i;	
+			}
+		}
+		if(v3[i]<0)
+    	{
+    		if(aux>v3[i])
+    		{
+				aux= v3[i];
+			}
+		}
+    }
+    B3 = -1*aux;
+    
+     a=0;
+	//calculando L3 de p3(x)
+    x = (g-k3);
+	a= (B3/v3[0]);
+    L3 = 1+pow(a,1/x);
+    
+    lim_positivo[0] = 1/L1;
+    lim_positivo[1] = L0;
+    lim_negativo[0] = -1*L2;
+    lim_negativo[1] = -1/L3;
+    
+    // Teorema de lagrange
+	// exibindo os limites: primeiramente, das raízes reais positivas e depois das negativas
+	printf("\n Os intervalos das raizes reais positivas e negativas da equa%c%co s%co:",135,198,198);
+    printf("\n  %.3f <= E+ <= %.3f", lim_positivo[0], lim_positivo[1]);  
+    printf("\n %.3f <= E- <= %.3f\n\n", lim_negativo[0], lim_negativo[1]); 
+    
+    //Escolha do intervalo a ser usado no teorema de Bolzano
+	do{
+    	printf("Qual intervalo sera usado? (p-> positivo; n-> negativo): ");
+    	fflush(stdin);
+    	scanf("%c", &escolha);
+    	
+    	switch(escolha){
+    		case 'p':
+    		case 'P':
+    			bolzano(g, v, lim_positivo);
+    			break;
+    		case 'n':
+    		case 'N':
+    			bolzano(g, v, lim_negativo);
+    			break;
+    		default:
+    			printf("Escolha errada!\n");
+    	}
+	}while(escolha !='p' && escolha !='P' && escolha !='n' && escolha !='N');
+} //Fim da função modoEquacao
+
+/*A função recebe grau, grau da equação; coef, vetor de coeficientes da equação;
+intervalo, intervalo onde se encontram as raízes positivas ou negativas. Ela calcula
+se o intervalo tem um número par ou ímpar de raízes, usando, para isso, o teorema de 
+Bolzano. Se a quantidade de raízes for ímpar a função para calcular uma raiz aproximada
+é chamada.*/
+void bolzano(int grau, float *coef, float *intervalo){
+	int i;
+	float fa, fb;
+	
+	for(i=0; i<=grau; i++){
+		fa += coef[i]*pow(intervalo[0], grau-i);
+		fb += coef[i]*pow(intervalo[1], grau-i);
+	}
+	
+	if(fa*fb<0){
+		printf("Numero impar de raizes.\n");
+		//CHAMAR A FUNÇÃO bisseção AQUI!
+		//bissecao(grau, coef, intervalo);
+	}
+	else{
+		printf("Numero par de raizes.\n");
+	}
+}
+/*Fim da função bolzano*/
 
 /*
  * Fim de EQUACAO:
