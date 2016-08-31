@@ -725,7 +725,7 @@ void modoEquacao() {
     do {
         printf("Qual intervalo sera usado? (p-> positivo; n-> negativo): ");
         fflush(stdin);
-        scanf("%c", &escolha);
+        scanf(" %c", &escolha);
 
         switch (escolha) {
             case 'p':
