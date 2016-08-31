@@ -784,7 +784,7 @@ void bissecao(int grau, float *coef, float *intervalo) {
 intervalo, intervalo onde se encontram as raizes positivas ou negativas. Ela calcula
 se o intervalo tem um numero par ou impar de raizes, usando, para isso, o teorema de
 Bolzano. Se a quantidade de raizes for impar a funcao para calcular uma raiz aproximada
-� chamada.*/
+e chamada.*/
 void bolzano(int grau, float *coef, float *intervalo) {
     int i;
     float fa, fb;
