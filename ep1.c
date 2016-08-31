@@ -469,7 +469,7 @@ void modoSistemaLinear() {
 
     //Leitura do nome do arquivo pelo teclado. Omite-se a extensao.
     printf("Nome de um arquivo (com ate 32 caracteres): ");
-    scanf("%s", &nome_arq);
+    scanf("%s", nome_arq);
 
     //Abertura do arquivo
     txt = strstr(nome_arq, ".txt");
@@ -482,7 +482,7 @@ void modoSistemaLinear() {
         return;
     } else {
         //Extracao do grau do SL
-        fscanf(arq, "%s\n", &grau_c);
+        fscanf(arq, "%s\n", grau_c);
         grau = atoi(grau_c);
 
         char coef[((grau + 1) * 16) + grau];
